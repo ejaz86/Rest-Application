@@ -11,6 +11,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.auto.dto.OrderDTO;
@@ -59,5 +60,12 @@ public class UserResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public int placeOrder(@PathParam("uid") long uid, OrderDTO orderDTO) throws MyApplicationException {
 		return serviceImpl.placeOrder(orderDTO);
+	}
+
+	@GET
+	@Path("token")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getUserToken(@QueryParam("uid") int uid) throws Exception {
+		return serviceImpl.getUserToken(uid);
 	}
 }

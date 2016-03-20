@@ -19,6 +19,7 @@ public class UserDAO {
 	private static final String UPDATE_USER = "update user set f_name = ? , l_name = ? ,email = ? , u_type = ? , contact = ? where uid = ?";
 	private static final String GET_USER = "select uid,l_name,email,u_type,contact,f_name from user";
 	private static final String USER_WHERE = " where uid = ?";
+	private static final String USER_WHERE1 = " where uid = ? and email = ?";
 	private static final String DELETE_USER = "delete from user where uid = ?";
 	private static final String WHERE_FOR_IS_VALID_USER = " where f_name = ? and email = ? and u_type = ?";
 
@@ -148,5 +149,35 @@ public class UserDAO {
 			DBConnector.close(conn);
 		}
 		return isValid;
+	}
+
+	public UserDTO getUserbyId(Integer integer, String email) {
+		Connection conn = DBConnector.getPooledConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		UserDTO userDto = null;
+		try {
+			pstmt = conn.prepareStatement(GET_USER + USER_WHERE1);
+			pstmt.setInt(1, integer.intValue());
+			pstmt.setString(2, email);
+			LOGGER.info("get user details query : " + pstmt.toString());
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				userDto = new UserDTO();
+				userDto.setUid(rs.getLong("uid"));
+				userDto.setfName(rs.getString("f_name"));
+				userDto.setlName(rs.getString("l_name"));
+				userDto.setEmail(rs.getString("email"));
+				userDto.setContact(rs.getLong("contact"));
+				userDto.setuType(rs.getInt("u_type"));
+			}
+		} catch (Exception e) {
+			LOGGER.error("error in get user by id", e);
+		} finally {
+			DBConnector.close(rs);
+			DBConnector.close(pstmt);
+			DBConnector.close(conn);
+		}
+		return userDto;
 	}
 }
